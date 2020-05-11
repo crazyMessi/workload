@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.wordload.mapper.WorkloadMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.example.wordload.entites.Workload">
+        <result column="hour" jdbcType="INTEGER" property="hour" />
+        <result column="workName" jdbcType="VARCHAR" property="workName" />
+        <result column="deadline" jdbcType="DATE" property="deadline" />
+        <result column="userId" jdbcType="VARCHAR" property="realName" />
+        <result column="workId" jdbcType="BIGINT" property="workId" />
+        <result column="startTime" jdbcType="DATE" property="startTime"/>
+        <result column="finished" jdbcType="INTEGER" property="finished"/>
+    </resultMap>
+
+
+    <insert id="addWork">
+        insert into workload (
+        userId,
+        workName,
+        `hour`,
+        <if test="deadline!=null">deadline,</if>
+        startTime
+        )
+        values
+        (
+        #{userId},
+        #{workName},
+        #{hour},
+        <if test="deadline!=null">#{deadline},</if>
+        #{startTime}
+        )
+    </insert>
+
+    <update id="modifyWork">
+        update workload set
+        <if test="workName!=null">
+        `workName`=#{workName}
+            <if test="hour!=-1 or deadline!=null">
+            ,
+            </if>
+        </if>
+        <if test="hour!=-1">
+        `hour`=#{hour}
+            <if test="deadline!=null">
+            ,
+            </if>
+        </if>
+        <if test="deadline!=null">
+        `deadline`=#{deadline}
+        </if>
+        where
+        workId = #{workId}
+    </update>
+
+    <update id="finishWork" parameterType="java.lang.Long">
+        update `workload` set `finished` = 1 where workId=#{workId}
+    </update>
+
+    <select id="getWork" resultType="com.example.wordload.entites.Workload">
+        select * from workload where userId=#{userId} and month(startTime)=#{month} and year(startTime)=#{year}  order by `startTime` DESC
+    </select>
+
+
+
+</mapper>
